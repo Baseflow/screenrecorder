@@ -1,7 +1,6 @@
 name: screenrecorder
-description: A new Flutter package project.
+description: Record your Flutter widgets and export it as a GIF
 version: 0.0.1
-author:
 homepage:
 
 environment:
