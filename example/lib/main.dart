@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:screenrecorder/screenrecorder.dart';
+import 'package:screen_recorder/screen_recorder.dart';
 
 void main() {
   runApp(MyApp());

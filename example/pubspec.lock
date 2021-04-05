@@ -116,7 +116,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.1.0"
-  screenrecorder:
+  screen_recorder:
     dependency: "direct main"
     description:
       path: ".."
