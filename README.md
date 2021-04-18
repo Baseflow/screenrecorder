@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="img/screen_recorder.svg">
+    <img src="https://raw.githubusercontent.com/ueman/screenrecorder/master/img/screen_recorder.svg">
 </p>
 
 <p align="center">
