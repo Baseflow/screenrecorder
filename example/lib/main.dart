@@ -39,57 +39,61 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenRecorder(
-      controller: controller,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'You have pushed the button this many times:',
+            ),
+            ScreenRecorder(
+              height: 200,
+              width: 200,
+              controller: controller,
+              child: Center(
+                child: Text(
+                  '$_counter',
+                  style: Theme.of(context).textTheme.headline4,
+                ),
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.start();
+              },
+              child: Text('Start'),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                controller.stop();
+              },
+              child: Text('Stop'),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                var gif = await controller.export();
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      content: Image.memory(gif),
+                    );
+                  },
+                );
+              },
+              child: Text('show recoded video'),
+            ),
+          ],
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text(
-                'You have pushed the button this many times:',
-              ),
-              Text(
-                '$_counter',
-                style: Theme.of(context).textTheme.headline4,
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  controller.start();
-                },
-                child: Text('Start'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  controller.stop();
-                },
-                child: Text('Stop'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  var gif = await controller.export();
-                  showDialog(
-                    context: context,
-                    builder: (context) {
-                      return AlertDialog(
-                        content: Image.memory(gif),
-                      );
-                    },
-                  );
-                },
-                child: Text('show recoded video'),
-              ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _incrementCounter,
-          tooltip: 'Increment',
-          child: Icon(Icons.add),
-        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _incrementCounter,
+        tooltip: 'Increment',
+        child: Icon(Icons.add),
       ),
     );
   }

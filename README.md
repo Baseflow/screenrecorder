@@ -45,6 +45,26 @@ dependencies:
 
 Then, run `flutter packages get` in your terminal.
 
+## Example 
+
+Wrap your widget which should be recorded in a `ScreenRecorder`:
+```
+ScreenRecorder(
+  height: 200,
+  width: 200,
+  background: Colors.white,
+  controller: ScreenRecorderController(
+    pixelRatio: 0.5,
+    skipFramesBetweenCaptures: 2,
+  ),
+  child: // child which should be recorded
+);
+```
+
+Then use `ScreenRecorderController.start()` to start recording and 
+`ScreenRecorderController.stop()` to stop the recording.
+`final gif = await ScreenRecorderController.export()` gives you the result which can be written to disk.
+
 ## ⚠️ Known issues and limitations
 
 - Platform views are invisible in screenshots (like [webview](https://pub.dev/packages/webview_flutter) or [Google Maps](https://pub.dev/packages/google_maps_flutter)). For further details, see this [Flutter issue](https://github.com/flutter/flutter/issues/25306).
