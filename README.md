@@ -69,6 +69,8 @@ Then use `ScreenRecorderController.start()` to start recording and
 
 - Platform views are invisible in screenshots (like [webview](https://pub.dev/packages/webview_flutter) or [Google Maps](https://pub.dev/packages/google_maps_flutter)). For further details, see this [Flutter issue](https://github.com/flutter/flutter/issues/25306).
 - Web only works with Flutter's CanvasKit Renderer, for more information see [Flutter Web Renderer docs](https://flutter.dev/docs/development/tools/web-renderers).
+- This package does not and will not support audio until it is possible in a pure Dart/Flutter environment.
+- This package does not and will not support exporting as a video until it is possible in a pure Dart/Flutter environment.
 
 
 ## 📣  Author
