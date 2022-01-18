@@ -179,6 +179,7 @@ class ScreenRecorder extends StatelessWidget {
       child: Container(
         width: width,
         height: height,
+        color: background,
         child: child,
       ),
     );
