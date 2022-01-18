@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
 
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -80,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   context: context,
                   builder: (context) {
                     return AlertDialog(
-                      content: Image.memory(gif),
+                      content: Image.memory(Uint8List.fromList(gif!)),
                     );
                   },
                 );
