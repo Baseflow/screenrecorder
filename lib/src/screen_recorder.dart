@@ -67,7 +67,7 @@ class ScreenRecorderController {
       skipped = skipped + skipFramesBetweenCaptures;
     }
     try {
-      final image = await capture();
+      final image = capture();
       if (image == null) {
         print('capture returned null');
         return;
@@ -79,29 +79,11 @@ class ScreenRecorderController {
     _binding.addPostFrameCallback(postFrameCallback);
   }
 
-  Future<ui.Image?> capture() async {
-    final renderObject = _containerKey.currentContext?.findRenderObject();
+  ui.Image? capture() {
+    final renderObject = _containerKey.currentContext!.findRenderObject()
+        as RenderRepaintBoundary;
 
-    if (renderObject is RenderRepaintBoundary) {
-      final image = await renderObject.toImage(pixelRatio: pixelRatio);
-      return image;
-    } else {
-      FlutterError.reportError(_noRenderObject());
-    }
-    return null;
-  }
-
-  FlutterErrorDetails _noRenderObject() {
-    return FlutterErrorDetails(
-      exception: Exception(
-        '_containerKey.currentContext is null. '
-        'Thus we can\'t create a screenshot',
-      ),
-      library: 'feedback',
-      context: ErrorDescription(
-        'Tried to find a context to use it to create a screenshot',
-      ),
-    );
+    return renderObject.toImageSync(pixelRatio: pixelRatio);
   }
 
   Future<List<int>?> export() async {
