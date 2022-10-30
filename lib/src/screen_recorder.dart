@@ -1,22 +1,24 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:ui' as ui show Image, ImageByteFormat;
+import 'dart:ui' as ui show Image;
 
-import 'package:image/image.dart' as image;
+import 'package:screen_recorder/src/exporter.dart';
+import 'package:screen_recorder/src/frame.dart';
 
 class ScreenRecorderController {
   ScreenRecorderController({
+    Exporter? exporter,
     this.pixelRatio = 0.5,
     this.skipFramesBetweenCaptures = 2,
     SchedulerBinding? binding,
   })  : _containerKey = GlobalKey(),
-        _binding = binding ?? SchedulerBinding.instance;
+        _binding = binding ?? SchedulerBinding.instance,
+        exporter = GifExporter();
 
   final GlobalKey _containerKey;
   final SchedulerBinding _binding;
-  final List<Frame> _frames = [];
+  final Exporter exporter;
 
   /// The pixelRatio describes the scale between the logical pixels and the size
   /// of the output image. Specifying 1.0 will give you a 1:1 mapping between
@@ -72,7 +74,7 @@ class ScreenRecorderController {
         print('capture returned null');
         return;
       }
-      _frames.add(Frame(timestamp, image));
+      exporter.onNewFrame(Frame(timestamp, image));
     } catch (e) {
       print(e.toString());
     }
@@ -86,37 +88,7 @@ class ScreenRecorderController {
     return renderObject.toImageSync(pixelRatio: pixelRatio);
   }
 
-  Future<List<int>?> export() async {
-    List<RawFrame> bytes = [];
-    for (final frame in _frames) {
-      final i = await frame.image.toByteData(format: ui.ImageByteFormat.png);
-      if (i != null) {
-        bytes.add(RawFrame(16, i));
-      } else {
-        print('Skipped frame while enconding');
-      }
-    }
-    final result = compute(_export, bytes);
-    _frames.clear();
-    return result;
-  }
-
-  static Future<List<int>?> _export(List<RawFrame> frames) async {
-    final animation = image.Animation();
-    animation.backgroundColor = Colors.transparent.value;
-    for (final frame in frames) {
-      final iAsBytes = frame.image.buffer.asUint8List();
-      final decodedImage = image.decodePng(iAsBytes);
-
-      if (decodedImage == null) {
-        print('Skipped frame while enconding');
-        continue;
-      }
-      decodedImage.duration = frame.durationInMillis;
-      animation.addFrame(decodedImage);
-    }
-    return image.encodeGifAnimation(animation);
-  }
+  Future<List<int>?> export() => exporter.export();
 }
 
 class ScreenRecorder extends StatelessWidget {
@@ -163,18 +135,4 @@ class ScreenRecorder extends StatelessWidget {
       ),
     );
   }
-}
-
-class Frame {
-  Frame(this.timeStamp, this.image);
-
-  final Duration timeStamp;
-  final ui.Image image;
-}
-
-class RawFrame {
-  RawFrame(this.durationInMillis, this.image);
-
-  final int durationInMillis;
-  final ByteData image;
 }
