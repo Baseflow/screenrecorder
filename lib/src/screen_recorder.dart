@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -14,7 +12,7 @@ class ScreenRecorderController {
     this.skipFramesBetweenCaptures = 2,
     SchedulerBinding? binding,
   })  : _containerKey = GlobalKey(),
-        _binding = binding ?? SchedulerBinding.instance!;
+        _binding = binding ?? SchedulerBinding.instance;
 
   final GlobalKey _containerKey;
   final SchedulerBinding _binding;
