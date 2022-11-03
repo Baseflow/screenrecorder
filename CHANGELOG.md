@@ -1,3 +1,7 @@
+## [UNRELEASED]
+
+* Fix [#11](https://github.com/ueman/screenrecorder/issues/11)
+
 ## [0.1.0]
 
 * require at least Flutter >=3.4.0-34.1.pre

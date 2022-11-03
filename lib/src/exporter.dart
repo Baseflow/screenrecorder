@@ -15,6 +15,9 @@ class GifExporter implements Exporter {
 
   @override
   Future<List<int>?> export() async {
+    if (_frames.isEmpty) {
+      return null;
+    }
     List<RawFrame> bytes = [];
     for (final frame in _frames) {
       final i = await frame.image.toByteData(format: ui.ImageByteFormat.png);
