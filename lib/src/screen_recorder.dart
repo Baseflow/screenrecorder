@@ -14,7 +14,7 @@ class ScreenRecorderController {
     SchedulerBinding? binding,
   })  : _containerKey = GlobalKey(),
         _binding = binding ?? SchedulerBinding.instance,
-        exporter = GifExporter();
+        exporter = exporter ?? GifExporter();
 
   final GlobalKey _containerKey;
   final SchedulerBinding _binding;
