@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:example/sample_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
 
@@ -30,14 +31,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool _recording = false;
+  bool _exporting = false;
   ScreenRecorderController controller = ScreenRecorderController();
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -49,53 +45,55 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            ScreenRecorder(
-              height: 200,
-              width: 200,
-              controller: controller,
-              child: Center(
-                child: Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
+            if (_exporting)
+              Center(child: CircularProgressIndicator())
+            else ...[
+              ScreenRecorder(
+                height: 500,
+                width: 500,
+                controller: controller,
+                child: SampleAnimation(),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                controller.start();
-              },
-              child: Text('Start'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                controller.stop();
-              },
-              child: Text('Stop'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                var gif = await controller.export();
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: Image.memory(Uint8List.fromList(gif!)),
+              if (!_recording && !_exporting)
+                ElevatedButton(
+                  onPressed: () {
+                    controller.start();
+                    setState(() {
+                      _recording = true;
+                    });
+                  },
+                  child: Text('Start'),
+                ),
+              const SizedBox(
+                height: 15,
+              ),
+              if (_recording && !_exporting)
+                ElevatedButton(
+                  onPressed: () async {
+                    controller.stop();
+
+                    setState(() {
+                      _recording = false;
+                      _exporting = true;
+                    });
+                    var gif = await controller.export();
+                    setState(() {
+                      _exporting = false;
+                    });
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          content: Image.memory(Uint8List.fromList(gif!)),
+                        );
+                      },
                     );
                   },
-                );
-              },
-              child: Text('show recoded video'),
-            ),
+                  child: Text('Stop and Export'),
+                ),
+            ]
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }

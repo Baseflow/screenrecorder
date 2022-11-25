@@ -1,8 +1,8 @@
+import 'dart:ui' as ui show Image;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:ui' as ui show Image;
-
 import 'package:screen_recorder/src/exporter.dart';
 import 'package:screen_recorder/src/frame.dart';
 
@@ -131,6 +131,7 @@ class ScreenRecorder extends StatelessWidget {
         width: width,
         height: height,
         color: background,
+        alignment: Alignment.center,
         child: child,
       ),
     );
