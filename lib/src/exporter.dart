@@ -1,18 +1,37 @@
+import 'dart:ui' as ui show ImageByteFormat;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as image;
-import 'dart:ui' as ui show ImageByteFormat;
-import 'package:flutter/foundation.dart';
 import 'package:screen_recorder/src/frame.dart';
 
 abstract class Exporter {
-  void onNewFrame(Frame frame);
+  final List<Frame> _frames = [];
+  void onNewFrame(Frame frame) {
+    _frames.add(frame);
+  }
 
-  Future<List<int>?> export();
+  Future export();
 }
 
-class GifExporter implements Exporter {
-  final List<Frame> _frames = [];
+class FramesExporter extends Exporter {
+  @override
+  Future<List<ByteData>> export() async {
+    final bytesImages = <ByteData>[];
+    for (final frame in _frames) {
+      final bytesImage =
+          await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytesImage != null) {
+        bytesImages.add(bytesImage);
+      } else {
+        print('Skipped frame while enconding');
+      }
+    }
+    return bytesImages;
+  }
+}
 
+class GifExporter extends Exporter {
   @override
   Future<List<int>?> export() async {
     if (_frames.isEmpty) {

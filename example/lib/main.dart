@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:example/sample_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
@@ -33,7 +31,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _recording = false;
   bool _exporting = false;
-  ScreenRecorderController controller = ScreenRecorderController();
+  ScreenRecorderController controller = ScreenRecorderController(
+    exporter: FramesExporter(),
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -71,20 +71,34 @@ class _MyHomePageState extends State<MyHomePage> {
                 ElevatedButton(
                   onPressed: () async {
                     controller.stop();
-
                     setState(() {
                       _recording = false;
                       _exporting = true;
                     });
-                    var gif = await controller.export();
-                    setState(() {
-                      _exporting = false;
-                    });
+                    var images =
+                        await (controller.exporter as FramesExporter).export();
+                    setState(() => _exporting = false);
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          content: Image.memory(Uint8List.fromList(gif!)),
+                          content: SizedBox(
+                            height: 500,
+                            width: 500,
+                            child: ListView.builder(
+                              padding: EdgeInsets.all(8.0),
+                              itemCount: images.length,
+                              itemBuilder: (BuildContext context, int index) {
+                                final image = images[index];
+                                return Container(
+                                  height: 150,
+                                  child: Image.memory(
+                                    image.buffer.asUint8List(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
                         );
                       },
                     );
