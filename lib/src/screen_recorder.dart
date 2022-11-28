@@ -88,7 +88,7 @@ class ScreenRecorderController {
     return renderObject.toImageSync(pixelRatio: pixelRatio);
   }
 
-  Future<List<int>?> export() => exporter.export();
+  Future<dynamic> export() => exporter.export();
 }
 
 class ScreenRecorder extends StatelessWidget {
