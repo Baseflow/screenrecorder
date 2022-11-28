@@ -1,6 +1,7 @@
-## [UNRELEASED]
+## [0.1.1]
 
 * Fix [#11](https://github.com/ueman/screenrecorder/issues/11)
+* Custom exporters can actually be used
 
 ## [0.1.0]
 
