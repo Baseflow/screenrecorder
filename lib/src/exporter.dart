@@ -5,58 +5,40 @@ import 'package:flutter/material.dart';
 import 'package:image/image.dart' as image;
 import 'package:screen_recorder/src/frame.dart';
 
-abstract class Exporter {
+class Exporter {
   final List<Frame> _frames = [];
   void onNewFrame(Frame frame) {
     _frames.add(frame);
   }
 
-  Future export();
-}
-
-class FramesExporter extends Exporter {
-  @override
-  Future<List<ByteData>> export() async {
-    final bytesImages = <ByteData>[];
+  Future<List<RawFrame>?> exportFrames() async {
+    if (_frames.isEmpty) {
+      return null;
+    }
+    final bytesImages = <RawFrame>[];
     for (final frame in _frames) {
       final bytesImage =
           await frame.image.toByteData(format: ui.ImageByteFormat.png);
       if (bytesImage != null) {
-        bytesImages.add(bytesImage);
+        bytesImages.add(RawFrame(16, bytesImage));
       } else {
         print('Skipped frame while enconding');
       }
     }
     return bytesImages;
   }
-}
 
-class GifExporter extends Exporter {
-  @override
-  Future<List<int>?> export() async {
-    if (_frames.isEmpty) {
+  Future<List<int>?> exportGif() async {
+    final frames = await exportFrames();
+    if (frames == null) {
       return null;
     }
-    List<RawFrame> bytes = [];
-    for (final frame in _frames) {
-      final i = await frame.image.toByteData(format: ui.ImageByteFormat.png);
-      if (i != null) {
-        bytes.add(RawFrame(16, i));
-      } else {
-        print('Skipped frame while enconding');
-      }
-    }
-    final result = compute(_export, bytes);
+    final result = compute(_exportGif, frames);
     _frames.clear();
     return result;
   }
 
-  @override
-  void onNewFrame(Frame frame) {
-    _frames.add(frame);
-  }
-
-  static Future<List<int>?> _export(List<RawFrame> frames) async {
+  static Future<List<int>?> _exportGif(List<RawFrame> frames) async {
     final animation = image.Animation();
     animation.backgroundColor = Colors.transparent.value;
     for (final frame in frames) {

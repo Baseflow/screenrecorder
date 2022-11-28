@@ -31,9 +31,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _recording = false;
   bool _exporting = false;
-  ScreenRecorderController controller = ScreenRecorderController(
-    exporter: FramesExporter(),
-  );
+  ScreenRecorderController controller = ScreenRecorderController();
 
   @override
   Widget build(BuildContext context) {
@@ -75,8 +73,10 @@ class _MyHomePageState extends State<MyHomePage> {
                       _recording = false;
                       _exporting = true;
                     });
-                    var images =
-                        await (controller.exporter as FramesExporter).export();
+                    var frames = await controller.exporter.exportFrames();
+                    if (frames == null) {
+                      throw Exception();
+                    }
                     setState(() => _exporting = false);
                     showDialog(
                       context: context,
@@ -87,9 +87,9 @@ class _MyHomePageState extends State<MyHomePage> {
                             width: 500,
                             child: ListView.builder(
                               padding: EdgeInsets.all(8.0),
-                              itemCount: images.length,
+                              itemCount: frames.length,
                               itemBuilder: (BuildContext context, int index) {
-                                final image = images[index];
+                                final image = frames[index].image;
                                 return Container(
                                   height: 150,
                                   child: Image.memory(
