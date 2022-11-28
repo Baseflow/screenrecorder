@@ -1,11 +1,12 @@
-## [UNRELEASED]
-
-* Fix [#11](https://github.com/ueman/screenrecorder/issues/11)
-
 ## [0.2.0]
 
 * `Exporter` class exposes now `exportGif` and `exportFrames`.
 * Updated the example project using an AnimatedContainer to have a more heavy output.
+
+## [0.1.1]
+
+* Fix [#11](https://github.com/ueman/screenrecorder/issues/11)
+* Custom exporters can actually be used
 
 ## [0.1.0]
 
