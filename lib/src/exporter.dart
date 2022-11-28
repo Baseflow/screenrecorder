@@ -11,6 +11,12 @@ class Exporter {
     _frames.add(frame);
   }
 
+  void clear() {
+    _frames.clear();
+  }
+
+  bool get hasFrames => _frames.isNotEmpty;
+
   Future<List<RawFrame>?> exportFrames() async {
     if (_frames.isEmpty) {
       return null;
@@ -33,9 +39,7 @@ class Exporter {
     if (frames == null) {
       return null;
     }
-    final result = compute(_exportGif, frames);
-    _frames.clear();
-    return result;
+    return compute(_exportGif, frames);
   }
 
   static Future<List<int>?> _exportGif(List<RawFrame> frames) async {

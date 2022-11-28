@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:example/sample_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
@@ -32,6 +34,7 @@ class _MyHomePageState extends State<MyHomePage> {
   bool _recording = false;
   bool _exporting = false;
   ScreenRecorderController controller = ScreenRecorderController();
+  bool get canExport => controller.exporter.hasFrames;
 
   @override
   Widget build(BuildContext context) {
@@ -53,57 +56,96 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: SampleAnimation(),
               ),
               if (!_recording && !_exporting)
-                ElevatedButton(
-                  onPressed: () {
-                    controller.start();
-                    setState(() {
-                      _recording = true;
-                    });
-                  },
-                  child: Text('Start'),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.start();
+                      setState(() {
+                        _recording = true;
+                      });
+                    },
+                    child: Text('Start'),
+                  ),
                 ),
-              const SizedBox(
-                height: 15,
-              ),
               if (_recording && !_exporting)
-                ElevatedButton(
-                  onPressed: () async {
-                    controller.stop();
-                    setState(() {
-                      _recording = false;
-                      _exporting = true;
-                    });
-                    var frames = await controller.exporter.exportFrames();
-                    if (frames == null) {
-                      throw Exception();
-                    }
-                    setState(() => _exporting = false);
-                    showDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          content: SizedBox(
-                            height: 500,
-                            width: 500,
-                            child: ListView.builder(
-                              padding: EdgeInsets.all(8.0),
-                              itemCount: frames.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                final image = frames[index].image;
-                                return Container(
-                                  height: 150,
-                                  child: Image.memory(
-                                    image.buffer.asUint8List(),
-                                  ),
-                                );
-                              },
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.stop();
+                      setState(() {
+                        _recording = false;
+                      });
+                    },
+                    child: Text('Stop'),
+                  ),
+                ),
+              if (canExport && !_exporting)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _exporting = true;
+                      });
+                      var frames = await controller.exporter.exportFrames();
+                      if (frames == null) {
+                        throw Exception();
+                      }
+                      setState(() => _exporting = false);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: SizedBox(
+                              height: 500,
+                              width: 500,
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(8.0),
+                                itemCount: frames.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final image = frames[index].image;
+                                  return Container(
+                                    height: 150,
+                                    child: Image.memory(
+                                      image.buffer.asUint8List(),
+                                    ),
+                                  );
+                                },
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  child: Text('Stop and Export'),
+                          );
+                        },
+                      );
+                    },
+                    child: Text('Export as frames'),
+                  ),
+                ),
+              if (canExport && !_exporting)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _exporting = true;
+                      });
+                      var gif = await controller.exporter.exportGif();
+                      if (gif == null) {
+                        throw Exception();
+                      }
+                      setState(() => _exporting = false);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Image.memory(Uint8List.fromList(gif)),
+                          );
+                        },
+                      );
+                    },
+                    child: Text('Export as GIF'),
+                  ),
                 ),
             ]
           ],
