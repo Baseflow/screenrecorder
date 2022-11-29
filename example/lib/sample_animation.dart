@@ -24,6 +24,12 @@ class _SampleAnimationState extends State<SampleAnimation> {
     startTimer();
   }
 
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   Timer? _timer;
 
   void startTimer() {
