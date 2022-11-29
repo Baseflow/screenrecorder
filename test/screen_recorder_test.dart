@@ -3,11 +3,6 @@ import 'package:screen_recorder/screen_recorder.dart';
 
 class CustomExporter extends Exporter {
   @override
-  Future<List<int>?> export() {
-    throw UnimplementedError();
-  }
-
-  @override
   void onNewFrame(Frame frame) {}
 }
 
@@ -20,6 +15,6 @@ void main() {
     final exporter = CustomExporter();
     final scrennRecorder = ScreenRecorderController(exporter: exporter);
 
-    expect(scrennRecorder._exporter, equals(exporter));
+    expect(scrennRecorder.exporter, equals(exporter));
   });
 }
