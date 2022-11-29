@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:example/sample_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
 
@@ -30,14 +31,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool _recording = false;
+  bool _exporting = false;
   ScreenRecorderController controller = ScreenRecorderController();
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
+  bool get canExport => controller.exporter.hasFrames;
 
   @override
   Widget build(BuildContext context) {
@@ -49,53 +46,122 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
-              'You have pushed the button this many times:',
-            ),
-            ScreenRecorder(
-              height: 200,
-              width: 200,
-              controller: controller,
-              child: Center(
-                child: Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
-                ),
+            if (_exporting)
+              Center(child: CircularProgressIndicator())
+            else ...[
+              ScreenRecorder(
+                height: 500,
+                width: 500,
+                controller: controller,
+                child: SampleAnimation(),
               ),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                controller.start();
-              },
-              child: Text('Start'),
-            ),
-            ElevatedButton(
-              onPressed: () {
-                controller.stop();
-              },
-              child: Text('Stop'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                var gif = await controller.export();
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      content: Image.memory(Uint8List.fromList(gif!)),
-                    );
-                  },
-                );
-              },
-              child: Text('show recoded video'),
-            ),
+              if (!_recording && !_exporting)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.start();
+                      setState(() {
+                        _recording = true;
+                      });
+                    },
+                    child: Text('Start'),
+                  ),
+                ),
+              if (_recording && !_exporting)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      controller.stop();
+                      setState(() {
+                        _recording = false;
+                      });
+                    },
+                    child: Text('Stop'),
+                  ),
+                ),
+              if (canExport && !_exporting)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _exporting = true;
+                      });
+                      var frames = await controller.exporter.exportFrames();
+                      if (frames == null) {
+                        throw Exception();
+                      }
+                      setState(() => _exporting = false);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: SizedBox(
+                              height: 500,
+                              width: 500,
+                              child: ListView.builder(
+                                padding: EdgeInsets.all(8.0),
+                                itemCount: frames.length,
+                                itemBuilder: (BuildContext context, int index) {
+                                  final image = frames[index].image;
+                                  return Container(
+                                    height: 150,
+                                    child: Image.memory(
+                                      image.buffer.asUint8List(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    },
+                    child: Text('Export as frames'),
+                  ),
+                ),
+              if (canExport && !_exporting) ...[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      setState(() {
+                        _exporting = true;
+                      });
+                      var gif = await controller.exporter.exportGif();
+                      if (gif == null) {
+                        throw Exception();
+                      }
+                      setState(() => _exporting = false);
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            content: Image.memory(Uint8List.fromList(gif)),
+                          );
+                        },
+                      );
+                    },
+                    child: Text('Export as GIF'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        controller.exporter.clear();
+                      });
+                    },
+                    child: Text('Clear recorded data'),
+                  ),
+                )
+              ]
+            ]
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: Icon(Icons.add),
       ),
     );
   }

@@ -20,6 +20,6 @@ void main() {
     final exporter = CustomExporter();
     final scrennRecorder = ScreenRecorderController(exporter: exporter);
 
-    expect(scrennRecorder.exporter, equals(exporter));
+    expect(scrennRecorder._exporter, equals(exporter));
   });
 }

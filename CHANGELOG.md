@@ -2,6 +2,11 @@
 
 * Fix [#11](https://github.com/ueman/screenrecorder/issues/11)
 
+## [0.2.0]
+
+* `Exporter` class exposes now `exportGif` and `exportFrames`.
+* Updated the example project using an AnimatedContainer to have a more heavy output.
+
 ## [0.1.0]
 
 * require at least Flutter >=3.4.0-34.1.pre

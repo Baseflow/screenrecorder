@@ -1,8 +1,8 @@
+import 'dart:ui' as ui show Image;
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'dart:ui' as ui show Image;
-
 import 'package:screen_recorder/src/exporter.dart';
 import 'package:screen_recorder/src/frame.dart';
 
@@ -14,11 +14,13 @@ class ScreenRecorderController {
     SchedulerBinding? binding,
   })  : _containerKey = GlobalKey(),
         _binding = binding ?? SchedulerBinding.instance,
-        exporter = exporter ?? GifExporter();
+        _exporter = exporter ?? Exporter();
 
   final GlobalKey _containerKey;
   final SchedulerBinding _binding;
-  final Exporter exporter;
+  final Exporter _exporter;
+
+  Exporter get exporter => _exporter;
 
   /// The pixelRatio describes the scale between the logical pixels and the size
   /// of the output image. Specifying 1.0 will give you a 1:1 mapping between
@@ -74,7 +76,7 @@ class ScreenRecorderController {
         print('capture returned null');
         return;
       }
-      exporter.onNewFrame(Frame(timestamp, image));
+      _exporter.onNewFrame(Frame(timestamp, image));
     } catch (e) {
       print(e.toString());
     }
@@ -87,8 +89,6 @@ class ScreenRecorderController {
 
     return renderObject.toImageSync(pixelRatio: pixelRatio);
   }
-
-  Future<List<int>?> export() => exporter.export();
 }
 
 class ScreenRecorder extends StatelessWidget {
@@ -131,6 +131,7 @@ class ScreenRecorder extends StatelessWidget {
         width: width,
         height: height,
         color: background,
+        alignment: Alignment.center,
         child: child,
       ),
     );

@@ -1,43 +1,48 @@
+import 'dart:ui' as ui show ImageByteFormat;
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:image/image.dart' as image;
-import 'dart:ui' as ui show ImageByteFormat;
-import 'package:flutter/foundation.dart';
 import 'package:screen_recorder/src/frame.dart';
 
-abstract class Exporter {
-  void onNewFrame(Frame frame);
-
-  Future<List<int>?> export();
-}
-
-class GifExporter implements Exporter {
+class Exporter {
   final List<Frame> _frames = [];
-
-  @override
-  Future<List<int>?> export() async {
-    if (_frames.isEmpty) {
-      return null;
-    }
-    List<RawFrame> bytes = [];
-    for (final frame in _frames) {
-      final i = await frame.image.toByteData(format: ui.ImageByteFormat.png);
-      if (i != null) {
-        bytes.add(RawFrame(16, i));
-      } else {
-        print('Skipped frame while enconding');
-      }
-    }
-    final result = compute(_export, bytes);
-    _frames.clear();
-    return result;
-  }
-
-  @override
   void onNewFrame(Frame frame) {
     _frames.add(frame);
   }
 
-  static Future<List<int>?> _export(List<RawFrame> frames) async {
+  void clear() {
+    _frames.clear();
+  }
+
+  bool get hasFrames => _frames.isNotEmpty;
+
+  Future<List<RawFrame>?> exportFrames() async {
+    if (_frames.isEmpty) {
+      return null;
+    }
+    final bytesImages = <RawFrame>[];
+    for (final frame in _frames) {
+      final bytesImage =
+          await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      if (bytesImage != null) {
+        bytesImages.add(RawFrame(16, bytesImage));
+      } else {
+        print('Skipped frame while enconding');
+      }
+    }
+    return bytesImages;
+  }
+
+  Future<List<int>?> exportGif() async {
+    final frames = await exportFrames();
+    if (frames == null) {
+      return null;
+    }
+    return compute(_exportGif, frames);
+  }
+
+  static Future<List<int>?> _exportGif(List<RawFrame> frames) async {
     final animation = image.Animation();
     animation.backgroundColor = Colors.transparent.value;
     for (final frame in frames) {
