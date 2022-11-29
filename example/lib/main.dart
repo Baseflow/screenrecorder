@@ -122,7 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('Export as frames'),
                   ),
                 ),
-              if (canExport && !_exporting)
+              if (canExport && !_exporting) ...[
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: ElevatedButton(
@@ -147,6 +147,18 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Text('Export as GIF'),
                   ),
                 ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        controller.exporter.clear();
+                      });
+                    },
+                    child: Text('Clear recorded data'),
+                  ),
+                )
+              ]
             ]
           ],
         ),
