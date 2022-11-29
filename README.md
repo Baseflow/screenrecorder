@@ -46,7 +46,7 @@ Then, run `flutter packages get` in your terminal.
 ## Example 
 
 Wrap your widget which should be recorded in a `ScreenRecorder`:
-```
+```dart
 ScreenRecorder(
   height: 200,
   width: 200,
