@@ -5,6 +5,7 @@ import 'dart:ui' as ui show Image;
 
 import 'package:screen_recorder/src/exporter.dart';
 import 'package:screen_recorder/src/frame.dart';
+import 'package:screen_recorder/src/gif/gif_exporter.dart';
 
 class ScreenRecorderController {
   ScreenRecorderController({

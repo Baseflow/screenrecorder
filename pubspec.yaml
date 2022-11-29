@@ -15,6 +15,7 @@ dependencies:
   flutter:
     sdk: flutter
   image: ^3.0.2
+  stream_channel: ^2.1.1
 
 dev_dependencies:
   flutter_test:
