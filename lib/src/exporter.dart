@@ -7,8 +7,19 @@ import 'package:screen_recorder/src/frame.dart';
 
 class Exporter {
   final List<Frame> _frames = [];
+  Map<int, RawFrame> framesMap = {};
   void onNewFrame(Frame frame) {
     _frames.add(frame);
+    onNewFrameAsync(frame, _frames.length - 1);
+  }
+
+  Future<void> onNewFrameAsync(Frame frame, int index) async {
+    final bytes = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+    if (bytes != null) {
+      framesMap[index] = RawFrame(16, bytes);
+    } else {
+      print('Skipped frame while enconding');
+    }
   }
 
   void clear() {
@@ -18,20 +29,7 @@ class Exporter {
   bool get hasFrames => _frames.isNotEmpty;
 
   Future<List<RawFrame>?> exportFrames() async {
-    if (_frames.isEmpty) {
-      return null;
-    }
-    final bytesImages = <RawFrame>[];
-    for (final frame in _frames) {
-      final bytesImage =
-          await frame.image.toByteData(format: ui.ImageByteFormat.png);
-      if (bytesImage != null) {
-        bytesImages.add(RawFrame(16, bytesImage));
-      } else {
-        print('Skipped frame while enconding');
-      }
-    }
-    return bytesImages;
+    return framesMap.values.toList();
   }
 
   Future<List<int>?> exportGif() async {
