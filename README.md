@@ -89,3 +89,9 @@ In order to convert the gif to a video, you can try one of the following librari
 [![GitHub followers](https://img.shields.io/github/followers/ueman?style=social)](https://github.com/ueman)
 [![Twitter Follow](https://img.shields.io/twitter/follow/ue_man?style=social)](https://twitter.com/ue_man)
 
+## Contributors
+
+<a href="https://github.com/ueman/screenrecorder/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=ueman/screenrecorder" />
+</a>
+
