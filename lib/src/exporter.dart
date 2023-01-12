@@ -7,6 +7,8 @@ import 'package:screen_recorder/src/frame.dart';
 
 class Exporter {
   final List<Frame> _frames = [];
+  List<Frame> get frames => _frames;
+
   void onNewFrame(Frame frame) {
     _frames.add(frame);
   }

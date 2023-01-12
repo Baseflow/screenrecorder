@@ -1,3 +1,7 @@
+## [0.2.1]
+
+* `Exporter` class exposes now `frames`.
+
 ## [0.2.0]
 
 * `Exporter` class exposes now `exportGif` and `exportFrames`.
