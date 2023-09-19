@@ -1,6 +1,7 @@
 ## [0.2.1]
 
 * `Exporter` class exposes now `frames`.
+*  Bump `image` dependency to ^4.0.17
 
 ## [0.2.0]
 
