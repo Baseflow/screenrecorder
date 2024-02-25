@@ -1,7 +1,6 @@
 import 'dart:ui' as ui show ImageByteFormat;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:image/image.dart' as image;
 import 'package:screen_recorder/src/frame.dart';
 
@@ -45,8 +44,7 @@ class Exporter {
   }
 
   static Future<List<int>?> _exportGif(List<RawFrame> frames) async {
-    final animation = image.Animation();
-    animation.backgroundColor = Colors.transparent.value;
+    final encoder = image.GifEncoder();
     for (final frame in frames) {
       final iAsBytes = frame.image.buffer.asUint8List();
       final decodedImage = image.decodePng(iAsBytes);
@@ -55,10 +53,10 @@ class Exporter {
         print('Skipped frame while enconding');
         continue;
       }
-      decodedImage.duration = frame.durationInMillis;
-      animation.addFrame(decodedImage);
+      decodedImage.frameDuration = frame.durationInMillis;
+      encoder.addFrame(decodedImage);
     }
-    return image.encodeGifAnimation(animation);
+    return encoder.finish();
   }
 }
 
