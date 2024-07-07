@@ -5,10 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -16,18 +18,18 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -48,13 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               if (_exporting)
-                Center(child: CircularProgressIndicator())
+                const Center(child: CircularProgressIndicator())
               else ...[
                 ScreenRecorder(
                   height: 500,
                   width: 500,
                   controller: controller,
-                  child: SampleAnimation(),
+                  child: const SampleAnimation(),
                 ),
                 if (!_recording && !_exporting)
                   Padding(
@@ -66,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _recording = true;
                         });
                       },
-                      child: Text('Start'),
+                      child: const Text('Start'),
                     ),
                   ),
                 if (_recording && !_exporting)
@@ -79,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           _recording = false;
                         });
                       },
-                      child: Text('Stop'),
+                      child: const Text('Stop'),
                     ),
                   ),
                 if (canExport && !_exporting)
@@ -96,18 +98,19 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         setState(() => _exporting = false);
                         showDialog(
-                          context: context,
+                          context: context as dynamic,
                           builder: (context) {
                             return AlertDialog(
                               content: SizedBox(
                                 height: 500,
                                 width: 500,
                                 child: ListView.builder(
-                                  padding: EdgeInsets.all(8.0),
+                                  padding: const EdgeInsets.all(8.0),
                                   itemCount: frames.length,
-                                  itemBuilder: (BuildContext context, int index) {
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
                                     final image = frames[index].image;
-                                    return Container(
+                                    return SizedBox(
                                       height: 150,
                                       child: Image.memory(
                                         image.buffer.asUint8List(),
@@ -120,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                         );
                       },
-                      child: Text('Export as frames'),
+                      child: const Text('Export as frames'),
                     ),
                   ),
                 if (canExport && !_exporting) ...[
@@ -137,7 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                         setState(() => _exporting = false);
                         showDialog(
-                          context: context,
+                          context: context as dynamic,
                           builder: (context) {
                             return AlertDialog(
                               content: Image.memory(Uint8List.fromList(gif)),
@@ -145,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           },
                         );
                       },
-                      child: Text('Export as GIF'),
+                      child: const Text('Export as GIF'),
                     ),
                   ),
                   Padding(
@@ -156,7 +159,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           controller.exporter.clear();
                         });
                       },
-                      child: Text('Clear recorded data'),
+                      child: const Text('Clear recorded data'),
                     ),
                   )
                 ]
