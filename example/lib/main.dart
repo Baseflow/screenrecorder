@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:example/sample_animation.dart';
@@ -136,11 +135,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (gif == null) {
                           throw Exception();
                         }
-
-
-                        File('/data/data/com.example.example/cache/my_image.gif').writeAsBytes(Uint8List.fromList(gif));
-
-
                         setState(() => _exporting = false);
                         showDialog(
                           context: context,
