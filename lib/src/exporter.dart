@@ -56,13 +56,13 @@ class Exporter {
         continue;
       }
       decodedImage.frameDuration = frame.durationInMillis;
-      mainImage.frames.add(encodeGifWIthTransparency(decodedImage));
+      mainImage.frames.add(_encodeGifWIthTransparency(decodedImage));
     }
 
     return image.encodeGif(mainImage);
   }
 
-  static image.PaletteUint8 convertPalette(image.Palette palette) {
+  static image.PaletteUint8 _convertPalette(image.Palette palette) {
     final newPalette = image.PaletteUint8(palette.numColors, 4);
     for (var i = 0; i < palette.numColors; i++) {
       newPalette.setRgba(
@@ -71,7 +71,7 @@ class Exporter {
     return newPalette;
   }
 
-  static image.Image encodeGifWIthTransparency(image.Image srcImage,
+  static image.Image _encodeGifWIthTransparency(image.Image srcImage,
       {int transparencyThreshold = 128}) {
     final newImage = image.quantize(srcImage);
 
@@ -83,7 +83,7 @@ class Exporter {
       final srcFrame = srcImage.frames[frameIndex];
       final newFrame = newImage.frames[frameIndex];
 
-      final palette = convertPalette(newImage.palette!);
+      final palette = _convertPalette(newImage.palette!);
 
       for (final srcPixel in srcFrame) {
         if (srcPixel.a < transparencyThreshold) {
