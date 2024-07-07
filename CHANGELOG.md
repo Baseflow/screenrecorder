@@ -1,3 +1,8 @@
+## [0.3.0]
+
+* Add support transparency.
+* Updated the example project to last flutter changes.
+
 ## [0.2.1]
 
 * `Exporter` class exposes now `frames`.
