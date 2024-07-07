@@ -1,12 +1,12 @@
 import 'dart:ui' as ui show ImageByteFormat;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:image/image.dart' as image;
 import 'package:screen_recorder/src/frame.dart';
 
 class Exporter {
   final List<Frame> _frames = [];
+
   List<Frame> get frames => _frames;
 
   void onNewFrame(Frame frame) {
@@ -45,8 +45,8 @@ class Exporter {
   }
 
   static Future<List<int>?> _exportGif(List<RawFrame> frames) async {
-    final animation = image.Animation();
-    animation.backgroundColor = Colors.transparent.value;
+    image.Image mainImage = image.Image.empty();
+
     for (final frame in frames) {
       final iAsBytes = frame.image.buffer.asUint8List();
       final decodedImage = image.decodePng(iAsBytes);
@@ -55,10 +55,48 @@ class Exporter {
         print('Skipped frame while enconding');
         continue;
       }
-      decodedImage.duration = frame.durationInMillis;
-      animation.addFrame(decodedImage);
+      decodedImage.frameDuration = frame.durationInMillis;
+      mainImage.frames.add(encodeGifWIthTransparency(decodedImage));
     }
-    return image.encodeGifAnimation(animation);
+
+    return image.encodeGif(mainImage);
+  }
+
+  static image.PaletteUint8 convertPalette(image.Palette palette) {
+    final newPalette = image.PaletteUint8(palette.numColors, 4);
+    for (var i = 0; i < palette.numColors; i++) {
+      newPalette.setRgba(
+          i, palette.getRed(i), palette.getGreen(i), palette.getBlue(i), 255);
+    }
+    return newPalette;
+  }
+
+  static image.Image encodeGifWIthTransparency(image.Image srcImage,
+      {int transparencyThreshold = 128}) {
+    final newImage = image.quantize(srcImage);
+
+    // GifEncoder will use palette colors with a 0 alpha as transparent. Look at the pixels
+    // of the original image and set the alpha of the palette color to 0 if the pixel is below
+    // a transparency threshold.
+    final numFrames = srcImage.frames.length;
+    for (var frameIndex = 0; frameIndex < numFrames; frameIndex++) {
+      final srcFrame = srcImage.frames[frameIndex];
+      final newFrame = newImage.frames[frameIndex];
+
+      final palette = convertPalette(newImage.palette!);
+
+      for (final srcPixel in srcFrame) {
+        if (srcPixel.a < transparencyThreshold) {
+          final newPixel = newFrame.getPixel(srcPixel.x, srcPixel.y);
+          palette.setAlpha(
+              newPixel.index.toInt(), 0); // Set the palette color alpha to 0
+        }
+      }
+
+      newFrame.data!.palette = palette;
+    }
+
+    return newImage;
   }
 }
 
