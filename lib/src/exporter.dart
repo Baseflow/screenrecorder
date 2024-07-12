@@ -6,6 +6,8 @@ import 'package:screen_recorder/src/frame.dart';
 
 class Exporter {
   final List<Frame> _frames = [];
+  int _maxWidthFrame = 0;
+  int _maxHeightFrame = 0;
 
   List<Frame> get frames => _frames;
 
@@ -15,6 +17,9 @@ class Exporter {
 
   void clear() {
     _frames.clear();
+
+    _maxWidthFrame = 0;
+    _maxHeightFrame = 0;
   }
 
   bool get hasFrames => _frames.isNotEmpty;
@@ -27,6 +32,15 @@ class Exporter {
     for (final frame in _frames) {
       final bytesImage =
           await frame.image.toByteData(format: ui.ImageByteFormat.png);
+
+      if (frame.image.width >= _maxWidthFrame) {
+        _maxWidthFrame = frame.image.width;
+      }
+
+      if (frame.image.height >= _maxHeightFrame) {
+        _maxHeightFrame = frame.image.height;
+      }
+
       if (bytesImage != null) {
         bytesImages.add(RawFrame(16, bytesImage));
       } else {
@@ -41,10 +55,15 @@ class Exporter {
     if (frames == null) {
       return null;
     }
-    return compute(_exportGif, frames);
+    return compute(
+        _exportGif, DataHolder(frames, _maxWidthFrame, _maxHeightFrame));
   }
 
-  static Future<List<int>?> _exportGif(List<RawFrame> frames) async {
+  static Future<List<int>?> _exportGif(DataHolder data) async {
+    List<RawFrame> frames = data.frames;
+    int width = data.width;
+    int height = data.height;
+
     image.Image mainImage = image.Image.empty();
 
     for (final frame in frames) {
@@ -56,7 +75,21 @@ class Exporter {
         continue;
       }
       decodedImage.frameDuration = frame.durationInMillis;
-      mainImage.frames.add(_encodeGifWIthTransparency(decodedImage));
+      mainImage.frames.add(
+        _encodeGifWIthTransparency(
+          image.copyExpandCanvas(
+            decodedImage,
+            newWidth: width,
+            newHeight: height,
+            toImage: image.Image(
+              width: width,
+              height: height,
+              format: decodedImage.format,
+              numChannels: 4,
+            ),
+          ),
+        ),
+      );
     }
 
     return image.encodeGif(mainImage);
@@ -72,7 +105,7 @@ class Exporter {
   }
 
   static image.Image _encodeGifWIthTransparency(image.Image srcImage,
-      {int transparencyThreshold = 128}) {
+      {int transparencyThreshold = 1}) {
     final newImage = image.quantize(srcImage);
 
     // GifEncoder will use palette colors with a 0 alpha as transparent. Look at the pixels
@@ -105,4 +138,13 @@ class RawFrame {
 
   final int durationInMillis;
   final ByteData image;
+}
+
+class DataHolder {
+  DataHolder(this.frames, this.width, this.height);
+
+  List<RawFrame> frames;
+
+  int width;
+  int height;
 }
