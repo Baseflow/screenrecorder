@@ -2,7 +2,7 @@ import 'dart:ui' as ui show ImageByteFormat;
 
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as image;
-import 'package:screen_recorder/src/frame.dart';
+import 'frame.dart';
 
 class Exporter {
   final List<Frame> _frames = [];
@@ -44,7 +44,7 @@ class Exporter {
       if (bytesImage != null) {
         bytesImages.add(RawFrame(16, bytesImage));
       } else {
-        print('Skipped frame while enconding');
+        debugPrint('Skipped frame while enconding');
       }
     }
     return bytesImages;
@@ -71,7 +71,7 @@ class Exporter {
       final decodedImage = image.decodePng(iAsBytes);
 
       if (decodedImage == null) {
-        print('Skipped frame while enconding');
+        debugPrint('Skipped frame while enconding');
         continue;
       }
       decodedImage.frameDuration = frame.durationInMillis;

@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class SampleAnimation extends StatefulWidget {
-  const SampleAnimation({Key? key}) : super(key: key);
+  const SampleAnimation({super.key});
 
   @override
   State<SampleAnimation> createState() => _SampleAnimationState();

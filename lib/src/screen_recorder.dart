@@ -3,8 +3,8 @@ import 'dart:ui' as ui show Image;
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:screen_recorder/src/exporter.dart';
-import 'package:screen_recorder/src/frame.dart';
+import 'exporter.dart';
+import 'frame.dart';
 
 class ScreenRecorderController {
   ScreenRecorderController({
@@ -73,12 +73,12 @@ class ScreenRecorderController {
     try {
       final image = capture();
       if (image == null) {
-        print('capture returned null');
+        debugPrint('capture returned null');
         return;
       }
       _exporter.onNewFrame(Frame(timestamp, image));
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
     _binding.addPostFrameCallback(postFrameCallback);
   }
@@ -92,14 +92,14 @@ class ScreenRecorderController {
 }
 
 class ScreenRecorder extends StatelessWidget {
-  ScreenRecorder({
-    Key? key,
+  const ScreenRecorder({
+    super.key,
     required this.child,
     required this.controller,
     required this.width,
     required this.height,
     this.background = Colors.transparent,
-  }) : super(key: key);
+  });
 
   /// The child which should be recorded.
   final Widget child;

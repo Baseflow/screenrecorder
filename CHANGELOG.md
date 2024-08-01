@@ -2,11 +2,8 @@
 
 * Add support transparency.
 * Updated the example project to last flutter changes.
-
-## [0.2.1]
-
 * `Exporter` class exposes now `frames`.
-*  Bump `image` dependency to ^4.0.17
+* Bump `image` dependency to ^4.2.0
 
 ## [0.2.0]
 
@@ -33,7 +30,6 @@
 
 * Better Readme
 * Some more configuration options
-
 
 ## [0.0.1]
 
