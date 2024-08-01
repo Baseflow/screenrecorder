@@ -4,7 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class SampleAnimation extends StatefulWidget {
-  const SampleAnimation({Key? key});
+  const SampleAnimation({Key? key}) : super(key: key);
 
   @override
   State<SampleAnimation> createState() => _SampleAnimationState();
@@ -31,8 +31,8 @@ class _SampleAnimationState extends State<SampleAnimation> {
   Timer? _timer;
 
   void startTimer() {
-    const oneSec = const Duration(seconds: 1);
-    _timer = new Timer.periodic(
+    const oneSec = Duration(seconds: 1);
+    _timer = Timer.periodic(
       oneSec,
       (Timer timer) {
         setState(() {

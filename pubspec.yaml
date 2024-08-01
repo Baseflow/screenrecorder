@@ -1,6 +1,6 @@
 name: screen_recorder
 description: Record your Flutter widgets and export the recordings as a GIF
-version: 0.2.1
+version: 0.3.0
 repository: https://github.com/ueman/screenrecorder
 issue_tracker: https://github.com/ueman/screenrecorder/issues
 funding:
@@ -14,7 +14,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  image: ^4.0.17
+  image: ^4.2.0
 
 dev_dependencies:
   flutter_test:
