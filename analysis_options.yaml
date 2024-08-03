@@ -12,4 +12,5 @@ linter:
     always_use_package_imports: false
     omit_local_variable_types: false
     directives_ordering: true
+    eol_at_end_of_file: true
     

@@ -43,9 +43,10 @@ dependencies:
 
 Then, run `flutter packages get` in your terminal.
 
-## Example 
+## Example
 
 Wrap your widget which should be recorded in a `ScreenRecorder`:
+
 ```dart
 ScreenRecorder(
   height: 200,
@@ -59,7 +60,7 @@ ScreenRecorder(
 );
 ```
 
-Then use `ScreenRecorderController.start()` to start recording and 
+Then use `ScreenRecorderController.start()` to start recording and
 `ScreenRecorderController.stop()` to stop the recording.
 `final gif = await ScreenRecorderController.export()` gives you the result which can be written to disk.
 
@@ -94,4 +95,3 @@ In order to convert the gif to a video, you can try one of the following librari
 <a href="https://github.com/ueman/screenrecorder/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=ueman/screenrecorder" />
 </a>
-
