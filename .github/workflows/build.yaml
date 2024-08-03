@@ -1,0 +1,108 @@
+name: CI & CD
+
+on:
+  workflow_dispatch:
+
+  push:
+    branches: [develop, main]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+  pull_request:
+    branches: [develop, main]
+
+# This ensures that previous jobs for the PR are canceled when PR is updated
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build package & run tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Use shallow clone for faster checkout
+
+      - name: Check broken links
+        uses: JustinBeckwith/linkinator-action@v1
+        with:
+          paths: "**/*.md"
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Format code
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze static code
+        run: dart analyze
+
+      - name: Run tests
+        run: flutter test --no-pub --coverage
+
+      - name: Check publish warnings
+        run: dart pub publish --dry-run
+
+  example:
+    name: Build example app
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Use shallow clone for faster checkout
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Build example
+        run: flutter build appbundle --debug
+        working-directory: example
+
+  deployment:
+    if: ${{ github.ref_type == 'tag' }}
+    needs: [build, example]
+    name: Deploy package
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1 # Use shallow clone for faster checkout
+
+      - name: Set up Dart
+        uses: dart-lang/setup-dart@v1
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: "stable"
+          architecture: x64
+          cache: true
+
+      - name: Install dependencies
+        run: dart pub get
+
+      - name: Publish package
+        run: dart pub publish -v -f

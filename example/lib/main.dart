@@ -1,8 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:example/sample_animation.dart';
 import 'package:flutter/material.dart';
 import 'package:screen_recorder/screen_recorder.dart';
+
+import 'sample_animation.dart';
 
 void main() {
   runApp(const MyApp());
