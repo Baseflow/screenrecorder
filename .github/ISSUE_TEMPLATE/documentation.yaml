@@ -1,0 +1,28 @@
+name: 📘 Documentation
+description: You want to report something that is wrong or missing from the documentation
+labels: [documentation]
+body:
+- type: textarea
+  attributes:
+    label: Describe the change you would like to see
+    placeholder: |
+      A clear and concise description of the bug or documentation you feel is missing.
+      For example: The Technical Reference does not include information about the FormBuilderFilterChip widget.
+    render: Markdown
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: How would the suggested change make the documentation more useful?
+    placeholder: |
+      Provide context for how the requested change would make the docs easier to use and improve your ability to develop successful applications with this packages.
+      For example: It's hard to know a method exists or understand its use when you have to search through the code base to learn about it. Properly documenting it in the Technical Reference makes it easier for me to know what the flutter_fom_builder is (and is not capable of).
+    render: Markdown
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Aditional information
+    placeholder: Can add images, videos, more context, etc.
+  validations:
+    required: false

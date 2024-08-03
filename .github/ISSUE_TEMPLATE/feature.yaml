@@ -1,0 +1,37 @@
+name: 🚀 Feature request
+description: Suggest new feature or request for this project
+title: "[Field name or General]: <title>"
+labels: [enhancement]
+body:
+- type: checkboxes
+  attributes:
+    label: Is there an existing issue for this?
+    description: Please search to see if an issue already exists for the feature you requested.
+    options:
+    - label: I have searched the existing issues
+      required: true
+- type: input
+  attributes:
+    label: Package/Plugin version
+    description: Version number
+    placeholder: '1.0.0'
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: What you'd like to happen
+    render: Markdown
+  validations:
+    required: true
+- type: textarea
+  attributes:
+    label: Alternatives you've considered
+    render: Markdown
+  validations:
+    required: false
+- type: textarea
+  attributes:
+    label: Aditional information
+    placeholder: Can add images, videos, more context, etc.
+  validations:
+    required: false
