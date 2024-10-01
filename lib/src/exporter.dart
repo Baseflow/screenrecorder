@@ -30,7 +30,8 @@ class Exporter {
     }
     final bytesImages = <RawFrame>[];
     for (final frame in _frames) {
-      final bytesImage = await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      const ui.ImageByteFormat format = ui.ImageByteFormat.png;
+      final bytesImage = await frame.image.toByteData(format: format);
 
       if (frame.image.width >= _maxWidthFrame) {
         _maxWidthFrame = frame.image.width;
@@ -101,7 +102,10 @@ class Exporter {
     return newPalette;
   }
 
-  static image.Image _encodeGifWIthTransparency(image.Image srcImage, {int transparencyThreshold = 1}) {
+  static image.Image _encodeGifWIthTransparency(
+    image.Image srcImage, {
+    int transparencyThreshold = 1,
+  }) {
     var format = srcImage.format;
     image.Image image32;
     if (format != image.Format.int8) {
