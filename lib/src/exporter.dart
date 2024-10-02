@@ -55,7 +55,8 @@ class Exporter {
     if (frames == null) {
       return null;
     }
-    return compute(_exportGif, DataHolder(frames, _maxWidthFrame, _maxHeightFrame));
+    DataHolder dataHolder = DataHolder(frames, _maxWidthFrame, _maxHeightFrame);
+    return compute(_exportGif, dataHolder);
   }
 
   static Future<List<int>?> _exportGif(DataHolder data) async {
@@ -97,7 +98,10 @@ class Exporter {
   static image.PaletteUint8 _convertPalette(image.Palette palette) {
     final newPalette = image.PaletteUint8(palette.numColors, 4);
     for (var i = 0; i < palette.numColors; i++) {
-      newPalette.setRgba(i, palette.getRed(i), palette.getGreen(i), palette.getBlue(i), 255);
+      num r = palette.getRed(i);
+      num g = palette.getGreen(i);
+      num b = palette.getBlue(i);
+      newPalette.setRgba(i, r, g, b, 255);
     }
     return newPalette;
   }
