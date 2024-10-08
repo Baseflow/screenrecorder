@@ -30,8 +30,8 @@ class Exporter {
     }
     final bytesImages = <RawFrame>[];
     for (final frame in _frames) {
-      final bytesImage =
-          await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      const ui.ImageByteFormat format = ui.ImageByteFormat.png;
+      final bytesImage = await frame.image.toByteData(format: format);
 
       if (frame.image.width >= _maxWidthFrame) {
         _maxWidthFrame = frame.image.width;
@@ -55,8 +55,8 @@ class Exporter {
     if (frames == null) {
       return null;
     }
-    return compute(
-        _exportGif, DataHolder(frames, _maxWidthFrame, _maxHeightFrame));
+    DataHolder dataHolder = DataHolder(frames, _maxWidthFrame, _maxHeightFrame);
+    return compute(_exportGif, dataHolder);
   }
 
   static Future<List<int>?> _exportGif(DataHolder data) async {
@@ -98,15 +98,26 @@ class Exporter {
   static image.PaletteUint8 _convertPalette(image.Palette palette) {
     final newPalette = image.PaletteUint8(palette.numColors, 4);
     for (var i = 0; i < palette.numColors; i++) {
-      newPalette.setRgba(
-          i, palette.getRed(i), palette.getGreen(i), palette.getBlue(i), 255);
+      num r = palette.getRed(i);
+      num g = palette.getGreen(i);
+      num b = palette.getBlue(i);
+      newPalette.setRgba(i, r, g, b, 255);
     }
     return newPalette;
   }
 
-  static image.Image _encodeGifWIthTransparency(image.Image srcImage,
-      {int transparencyThreshold = 1}) {
-    final newImage = image.quantize(srcImage);
+  static image.Image _encodeGifWIthTransparency(
+    image.Image srcImage, {
+    int transparencyThreshold = 1,
+  }) {
+    var format = srcImage.format;
+    image.Image image32;
+    if (format != image.Format.int8) {
+      image32 = srcImage.convert(format: image.Format.uint8);
+    } else {
+      image32 = srcImage;
+    }
+    final newImage = image.quantize(image32);
 
     // GifEncoder will use palette colors with a 0 alpha as transparent. Look at the pixels
     // of the original image and set the alpha of the palette color to 0 if the pixel is below
@@ -121,8 +132,7 @@ class Exporter {
       for (final srcPixel in srcFrame) {
         if (srcPixel.a < transparencyThreshold) {
           final newPixel = newFrame.getPixel(srcPixel.x, srcPixel.y);
-          palette.setAlpha(
-              newPixel.index.toInt(), 0); // Set the palette color alpha to 0
+          palette.setAlpha(newPixel.index.toInt(), 0); // Set the palette color alpha to 0
         }
       }
 
