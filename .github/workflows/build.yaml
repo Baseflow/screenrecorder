@@ -28,7 +28,7 @@ jobs:
           fetch-depth: 1 # Use shallow clone for faster checkout
 
       - name: Check broken links
-        uses: JustinBeckwith/linkinator-action@v1
+        uses: JustinBeckwith/linkinator-action@v2
         with:
           paths: "**/*.md"
 
