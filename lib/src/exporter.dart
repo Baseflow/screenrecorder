@@ -2,6 +2,7 @@ import 'dart:ui' as ui show ImageByteFormat;
 
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as image;
+
 import 'frame.dart';
 
 class Exporter {
@@ -30,8 +31,9 @@ class Exporter {
     }
     final bytesImages = <RawFrame>[];
     for (final frame in _frames) {
-      final bytesImage =
-          await frame.image.toByteData(format: ui.ImageByteFormat.png);
+      final bytesImage = await frame.image.toByteData(
+        format: ui.ImageByteFormat.png,
+      );
 
       if (frame.image.width >= _maxWidthFrame) {
         _maxWidthFrame = frame.image.width;
@@ -50,16 +52,30 @@ class Exporter {
     return bytesImages;
   }
 
-  Future<List<int>?> exportGif() async {
+  Future<List<int>?> exportGif({
+    int repeat = 0,
+    int samplingFactor = 10,
+    image.DitherKernel dither = image.DitherKernel.floydSteinberg,
+    bool ditherSerpentine = false,
+  }) async {
     final frames = await exportFrames();
     if (frames == null) {
       return null;
     }
     return compute(
-        _exportGif, DataHolder(frames, _maxWidthFrame, _maxHeightFrame));
+      _exportGif,
+      DataHolder(frames, _maxWidthFrame, _maxHeightFrame),
+    );
   }
 
-  static Future<List<int>?> _exportGif(DataHolder data) async {
+  static Future<List<int>?> _exportGif(
+    DataHolder data, {
+    bool singleFrame = false,
+    int repeat = 0,
+    int samplingFactor = 10,
+    image.DitherKernel dither = image.DitherKernel.floydSteinberg,
+    bool ditherSerpentine = false,
+  }) async {
     List<RawFrame> frames = data.frames;
     int width = data.width;
     int height = data.height;
@@ -92,20 +108,34 @@ class Exporter {
       );
     }
 
-    return image.encodeGif(mainImage);
+    return image.encodeGif(
+      mainImage,
+      singleFrame: singleFrame,
+      repeat: repeat,
+      samplingFactor: samplingFactor,
+      dither: dither,
+      ditherSerpentine: ditherSerpentine,
+    );
   }
 
   static image.PaletteUint8 _convertPalette(image.Palette palette) {
     final newPalette = image.PaletteUint8(palette.numColors, 4);
     for (var i = 0; i < palette.numColors; i++) {
       newPalette.setRgba(
-          i, palette.getRed(i), palette.getGreen(i), palette.getBlue(i), 255);
+        i,
+        palette.getRed(i),
+        palette.getGreen(i),
+        palette.getBlue(i),
+        255,
+      );
     }
     return newPalette;
   }
 
-  static image.Image _encodeGifWIthTransparency(image.Image srcImage,
-      {int transparencyThreshold = 1}) {
+  static image.Image _encodeGifWIthTransparency(
+    image.Image srcImage, {
+    int transparencyThreshold = 1,
+  }) {
     final newImage = image.quantize(srcImage);
 
     // GifEncoder will use palette colors with a 0 alpha as transparent. Look at the pixels
@@ -122,7 +152,9 @@ class Exporter {
         if (srcPixel.a < transparencyThreshold) {
           final newPixel = newFrame.getPixel(srcPixel.x, srcPixel.y);
           palette.setAlpha(
-              newPixel.index.toInt(), 0); // Set the palette color alpha to 0
+            newPixel.index.toInt(),
+            0,
+          ); // Set the palette color alpha to 0
         }
       }
 
